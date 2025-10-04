@@ -3,4 +3,4 @@ width: 150
 letters: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 numbers: "1234567890"
 specialCharacters: "-+*/#$%!&?@:'=_()^;"
-isRepeatedCharacters: false
+isRepeatedCharacters: true

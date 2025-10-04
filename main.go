@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	rand2 "math/rand"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -20,32 +21,40 @@ type passwordConfig struct {
 func main() {
 	data, err := ioutil.ReadFile("config.yaml")
 	if err != nil {
-		panic(fmt.Sprintf("error: %e", err))
+		panic(fmt.Sprintf("error: %v", err))
 	}
 
 	var config passwordConfig
 
 	if yaml.Unmarshal(data, &config) != nil {
-		panic(fmt.Sprintf("error: %e", err))
+		panic(fmt.Sprintf("error: %v", err))
 	}
 
 	var symbols string = config.Letters + config.Numbers + config.SpecialCharacters
+	var symbolsCount int = len(symbols)
+	uniqueSymbols := make(map[string]int)
+	if !config.IsRepeatedCharacters {
+		for _, val := range symbols {
+			uniqueSymbols[string(val)] = 1
+		}
+	}
 
 	for i := 0; i < config.Count; i++ {
-		password, symbolsCopy := "", symbols
+		password := ""
 
 		for j := 0; j < config.Width; j++ {
-
-			symbolsCount := len(symbolsCopy)
-			if symbolsCount == 0 {
-				break
-			}
-
 			var randIndex int = rand2.Intn(symbolsCount)
-			var symbol string = string(symbolsCopy[randIndex])
+			var symbol string = string(symbols[randIndex])
 
 			if !config.IsRepeatedCharacters {
-				symbolsCopy = symbolsCopy[:randIndex] + symbolsCopy[randIndex+1:]
+				if len(password) >= len(uniqueSymbols) {
+					break
+				}
+				if strings.Contains(password, symbol) {
+
+					j--
+					continue
+				}
 			}
 
 			password += symbol
